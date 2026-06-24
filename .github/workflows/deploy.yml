@@ -1,0 +1,19 @@
+# /ansible/deploy.yml
+- hosts: k8s_control_node
+  tasks:
+    - name: Deploy to K8s
+      shell: |
+        kubectl create deployment my-web-app \
+          --image=YOUR_DOCKERHUB_ID/my-web-app:latest \
+          --dry-run=client -o yaml > deployment.yaml
+
+        kubectl apply -f deployment.yaml
+
+        kubectl expose deployment my-web-app \
+          --type=NodePort \
+          --port=80 \
+          --target-port=80 \
+          --name=my-web-service \
+          --dry-run=client -o yaml > service.yaml
+
+        kubectl apply -f service.yaml
